@@ -7,7 +7,7 @@
 
     <q-dialog v-model="icon">
       <q-card>
-        <q-card-section class="row items-center">
+        <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">Close icon</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
@@ -38,7 +38,7 @@
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
         </q-card-section>
 
-        <q-card-section>
+        <q-card-section class="q-pt-none">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
         </q-card-section>
       </q-card>
@@ -55,7 +55,7 @@
           <q-space />
 
           <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+            <q-tooltip class="bg-white text-primary">Close</q-tooltip>
           </q-btn>
         </q-bar>
 
@@ -63,7 +63,7 @@
           <div class="text-h6">Alert</div>
         </q-card-section>
 
-        <q-card-section>
+        <q-card-section class="q-pt-none">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
         </q-card-section>
       </q-card>
@@ -73,7 +73,7 @@
       <q-card>
         <q-toolbar>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo.svg">
           </q-avatar>
 
           <q-toolbar-title><span class="text-weight-bold">Quasar</span> Framework</q-toolbar-title>
@@ -90,13 +90,15 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
-  data () {
+  setup () {
     return {
-      icon: false,
-      bar: false,
-      bar2: false,
-      toolbar: false
+      icon: ref(false),
+      bar: ref(false),
+      bar2: ref(false),
+      toolbar: ref(false)
     }
   }
 }

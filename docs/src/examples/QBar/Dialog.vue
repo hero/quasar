@@ -20,7 +20,7 @@
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
         </q-card-section>
 
-        <q-card-section>
+        <q-card-section class="q-pt-none">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
         </q-card-section>
       </q-card>
@@ -35,7 +35,7 @@
           <q-space />
 
           <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+            <q-tooltip class="bg-white text-primary">Close</q-tooltip>
           </q-btn>
         </q-bar>
 
@@ -48,11 +48,13 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
-  data () {
+  setup () {
     return {
-      lightDialog: false,
-      darkDialog: false
+      lightDialog: ref(false),
+      darkDialog: ref(false)
     }
   }
 }

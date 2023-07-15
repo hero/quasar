@@ -6,7 +6,6 @@
       content-class="bg-amber-3"
       toolbar-text-color="white"
       toolbar-toggle-color="yellow-8"
-      toolbar-flat
       toolbar-bg="primary"
       :toolbar="[
         ['bold', 'italic', 'underline'],
@@ -20,11 +19,14 @@
     />
   </div>
 </template>
+
 <script>
+import { ref } from 'vue'
+
 export default {
-  data () {
+  setup () {
     return {
-      editor: 'Customize it.'
+      editor: ref('Customize it.')
     }
   }
 }

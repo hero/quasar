@@ -15,7 +15,7 @@
           <q-space />
 
           <q-btn dense flat icon="minimize" @click="minimize" />
-          <q-btn dense flat icon="crop_square" @click="maximize" />
+          <q-btn dense flat icon="crop_square" @click="toggleMaximize" />
           <q-btn dense flat icon="close" @click="closeApp" />
         </q-bar>
 
@@ -39,7 +39,7 @@
                     <q-icon name="keyboard_arrow_right" />
                   </q-item-section>
 
-                  <q-menu anchor="top right" self="top left">
+                  <q-menu anchor="top end" self="top start">
                     <q-list>
                       <q-item
                         v-for="n in 3"
@@ -51,7 +51,7 @@
                         <q-item-section side>
                           <q-icon name="keyboard_arrow_right" />
                         </q-item-section>
-                        <q-menu auto-close anchor="top right" self="top left">
+                        <q-menu auto-close anchor="top end" self="top start">
                           <q-list>
                             <q-item
                               v-for="n in 3"
@@ -112,36 +112,25 @@
 </template>
 
 <script>
-// we guard the Electron API calls, but this
-// is only needed if we build same app with other
-// Quasar Modes as well (SPA/PWA/Cordova/SSR...)
+// We guard the Electron API calls with the optional chaining JS operator,
+// but this is only needed if we build same app with other Quasar Modes
+// as well (SPA/PWA/Cordova/SSR...)
 
 export default {
-  methods: {
-    minimize () {
-      if (process.env.MODE === 'electron') {
-        this.$q.electron.remote.BrowserWindow.getFocusedWindow().minimize()
-      }
-    },
-
-    maximize () {
-      if (process.env.MODE === 'electron') {
-        const win = this.$q.electron.remote.BrowserWindow.getFocusedWindow()
-
-        if (win.isMaximized()) {
-          win.unmaximize()
-        }
-        else {
-          win.maximize()
-        }
-      }
-    },
-
-    closeApp () {
-      if (process.env.MODE === 'electron') {
-        this.$q.electron.remote.BrowserWindow.getFocusedWindow().close()
-      }
+  setup () {
+    function minimize () {
+      window.myWindowAPI?.minimize()
     }
+
+    function toggleMaximize () {
+      window.myWindowAPI?.toggleMaximize()
+    }
+
+    function closeApp () {
+      window.myWindowAPI?.close()
+    }
+
+    return { minimize, toggleMaximize, closeApp }
   }
 }
 </script>

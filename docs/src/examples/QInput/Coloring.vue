@@ -13,6 +13,12 @@
         </template>
       </q-input>
 
+      <q-input color="grey-3" label-color="orange" outlined v-model="text" label="Label">
+        <template v-slot:append>
+          <q-icon name="event" color="orange" />
+        </template>
+      </q-input>
+
       <q-input color="lime-11" bg-color="green" filled v-model="text" label="Label">
         <template v-slot:prepend>
           <q-icon name="event" />
@@ -22,7 +28,7 @@
       <q-input color="teal" outlined v-model="text" label="Label">
         <template v-slot:append>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo.svg">
           </q-avatar>
         </template>
       </q-input>
@@ -44,10 +50,12 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
-  data () {
+  setup () {
     return {
-      text: ''
+      text: ref('')
     }
   }
 }

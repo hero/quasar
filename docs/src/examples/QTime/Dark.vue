@@ -1,9 +1,10 @@
 <template>
-  <div class="q-pa-md bg-grey-10 text-white">
+  <div class="q-pa-md bg-grey-9 text-white">
     <div class="q-gutter-md">
       <q-time
         v-model="time"
         dark
+        bordered
       />
 
       <q-time
@@ -11,16 +12,19 @@
         color="orange"
         text-color="black"
         dark
+        bordered
       />
     </div>
   </div>
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
-  data () {
+  setup () {
     return {
-      time: '10:56'
+      time: ref('10:56')
     }
   }
 }

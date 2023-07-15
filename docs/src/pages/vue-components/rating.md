@@ -1,30 +1,64 @@
 ---
 title: Rating
 desc: The QRating Vue component allows the user to rate items. It's usually known as 'star rating'.
+keys: QRating
+examples: QRating
 ---
 
 Quasar Rating is a Component which allows users to rate items, usually known as “Star Rating”.
 
-## Installation
-
-<doc-installation components="QRating" />
+<doc-api file="QRating" />
 
 ## Usage
 
-<doc-example title="Basic" file="QRating/Basic" />
+### Basic
 
-<doc-example title="With different icon when selected" file="QRating/SelectedIcon" />
+<doc-example title="Basic" file="Basic" />
 
-<doc-example title="With different icon for each rating" file="QRating/ArrayIcon" />
+<doc-example title="Custom number of choices" file="Max" />
 
-<doc-example title="With image icons" file="QRating/Images" />
+### Icons
 
-<doc-example title="Custom number of stars" file="QRating/Max" />
+<doc-example title="Image icons" file="Images" />
 
-<doc-example title="Standard sizes" file="QRating/StandardSizes" />
+In the example below, when using the `icon-selected` prop, notice we can still use `icon` as well. The latter becomes the icon(s) when they are not selected.
 
-<doc-example title="Readonly and disable" file="QRating/ReadonlyDisable" />
+<doc-example title="Different icon when selected" file="SelectedIcon" />
 
-## QRating API
+<doc-example title="Different icon for each rating" file="ArrayIcon" />
 
-<doc-api file="QRating" />
+### Colors
+
+When using the `color-selected` prop, notice we can still use `color` as well. The latter becomes the color(s) of the icons when they are not selected.
+
+<doc-example title="Different color for each rating" file="Colors" />
+
+### Floating number
+
+<doc-example title="Different icon and color when half selected" file="HalfSelected" />
+
+### No dimming
+
+<doc-example title="No dimming" file="NoDimming" />
+
+### Tooltips
+
+Notice how we can add tooltips to each icon in the example below.
+
+<doc-example title="With QTooltip" file="SlotTip" />
+
+### Sizes
+
+Apart from the standard sizes below, you can define your own through the `size` property.
+
+<doc-example title="Standard sizes" file="StandardSizes" />
+
+### Readonly and disable
+
+<doc-example title="Readonly and disable" file="ReadonlyDisable" />
+
+### Native form submit
+
+When dealing with a native form which has an `action` and a `method` (eg. when using Quasar with ASP.NET controllers), you need to specify the `name` property on QRating, otherwise formData will not contain it (if it should):
+
+<doc-example title="Native form" file="NativeForm" />

@@ -9,7 +9,6 @@
       :min="0.1"
       :max="1.5"
       :step="0.1"
-      :decimals="1"
       color="green"
     />
 
@@ -22,25 +21,26 @@
       :min="0.1"
       :max="1.5"
       :step="0"
-      :decimals="1"
       color="amber"
     />
   </div>
 </template>
 
 <script>
-export default {
-  data () {
-    return {
-      precision: {
-        min: 0.2,
-        max: 0.7
-      },
+import { ref } from 'vue'
 
-      zeroPrecision: {
+export default {
+  setup () {
+    return {
+      precision: ref({
         min: 0.2,
         max: 0.7
-      }
+      }),
+
+      zeroPrecision: ref({
+        min: 0.2,
+        max: 0.7
+      })
     }
   }
 }

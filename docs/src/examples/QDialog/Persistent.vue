@@ -8,7 +8,7 @@
           <div class="text-h6">Persistent</div>
         </q-card-section>
 
-        <q-card-section>
+        <q-card-section class="q-pt-none">
           Click/Tap on the backdrop.
         </q-card-section>
 
@@ -21,10 +21,12 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
-  data () {
+  setup () {
     return {
-      persistent: false
+      persistent: ref(false)
     }
   }
 }

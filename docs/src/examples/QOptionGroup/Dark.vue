@@ -1,19 +1,22 @@
 <template>
-  <div class="q-pa-lg bg-grey-10 text-white">
+  <div class="q-pa-lg bg-grey-9 text-white">
     <q-option-group
       v-model="group"
       :options="options"
-      :dark="true"
+      dark
       color="yellow"
     />
   </div>
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
-  data () {
+  setup () {
     return {
-      group: 'op1',
+      group: ref('op1'),
+
       options: [
         {
           label: 'Option 1',

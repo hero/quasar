@@ -13,6 +13,12 @@
         </template>
       </q-select>
 
+      <q-select color="grey-3" outlined label-color="orange" v-model="model" :options="options" label="Label">
+        <template v-slot:append>
+          <q-icon name="event" color="orange" />
+        </template>
+      </q-select>
+
       <q-select color="lime-11" bg-color="green" filled v-model="model" :options="options" label="Label">
         <template v-slot:prepend>
           <q-icon name="event" />
@@ -22,7 +28,7 @@
       <q-select color="teal" outlined v-model="model" :options="options" label="Label">
         <template v-slot:append>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo.svg">
           </q-avatar>
         </template>
       </q-select>
@@ -44,10 +50,12 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
-  data () {
+  setup () {
     return {
-      model: null,
+      model: ref(null),
 
       options: [
         'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'

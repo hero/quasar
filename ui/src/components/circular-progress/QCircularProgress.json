@@ -1,8 +1,8 @@
 {
-  "mixins": [ "mixins/size" ],
+  "mixins": [ "composables/private/use-size" ],
 
-  "behavior": {
-    "$listeners": true
+  "meta": {
+    "docsUrl": "https://v2.quasar.dev/vue-components/circular-progress"
   },
 
   "props": {
@@ -10,7 +10,6 @@
       "type": "Number",
       "default": 0,
       "desc": "Current progress (must be between min/max)",
-      "examples": [ 0, 100, 52.32 ],
       "category": "model"
     },
 
@@ -18,7 +17,6 @@
       "type": "Number",
       "default": 0,
       "desc": "Minimum value defining 'no progress' (must be lower than 'max')",
-      "examples": [ 0, 100, 52.32 ],
       "category": "model"
     },
 
@@ -26,7 +24,6 @@
       "type": "Number",
       "default": 100,
       "desc": "Maximum value defining 100% progress made (must be higher than 'min')",
-      "examples": [ 100, 52.32 ],
       "category": "model"
     },
 
@@ -53,11 +50,17 @@
       "category": "style"
     },
 
+    "rounded": {
+      "type": "Boolean",
+      "desc": "Rounding the arc of progress",
+      "category": "style",
+      "addedIn": "v2.8.4"
+    },
+
     "thickness": {
       "type": "Number",
       "default": 0.2,
       "desc": "Thickness of progress arc as a ratio (0.0 < x < 1.0) of component size",
-      "examples": [ 1, 0.3 ],
       "category": "style"
     },
 
@@ -65,7 +68,6 @@
       "type": "Number",
       "desc": "Angle to rotate progress arc by",
       "default": 0,
-      "examples": [ 0, 40, 90 ],
       "category": "content"
     },
 
@@ -85,12 +87,29 @@
       "type": "Boolean",
       "desc": "Reverses the direction of progress; Only for determined state",
       "category": "behavior"
+    },
+
+    "instant-feedback": {
+      "type": "Boolean",
+      "desc": "No animation when model changes",
+      "category": "behavior"
+    },
+
+    "animation-speed": {
+      "extends": "animation-speed",
+      "default": 600,
+      "addedIn": "v2.3"
     }
   },
 
   "slots": {
     "default": {
       "desc": "Used for component content only if 'show-value' prop is set; Make sure the content has enough space to be displayed inside the component"
+    },
+
+    "internal": {
+      "desc": "Used by QKnob internally",
+      "internal": true
     }
   }
 }

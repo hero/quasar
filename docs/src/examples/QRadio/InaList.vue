@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md">
-    <q-list link>
+    <q-list>
       <!--
         Rendering a <label> tag (notice tag="label")
         so QRadios will respond to clicks on QItems to
@@ -49,10 +49,12 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
-  data () {
+  setup () {
     return {
-      color: 'cyan'
+      color: ref('cyan')
     }
   }
 }

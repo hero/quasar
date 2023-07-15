@@ -7,12 +7,16 @@
 </template>
 
 <script>
+import { useQuasar } from 'quasar'
+
 export default {
-  methods: {
-    radio () {
-      this.$q.dialog({
+  setup () {
+    const $q = useQuasar()
+
+    function radio () {
+      $q.dialog({
         title: 'Options',
-        message: 'Choose your options',
+        message: 'Choose an option:',
         options: {
           type: 'radio',
           model: 'opt1',
@@ -32,12 +36,12 @@ export default {
       }).onDismiss(() => {
         // console.log('I am triggered on both OK and Cancel')
       })
-    },
+    }
 
-    checkbox () {
-      this.$q.dialog({
+    function checkbox () {
+      $q.dialog({
         title: 'Options',
-        message: 'Choose your options',
+        message: 'Choose your options:',
         options: {
           type: 'checkbox',
           model: [],
@@ -57,12 +61,12 @@ export default {
       }).onDismiss(() => {
         // console.log('I am triggered on both OK and Cancel')
       })
-    },
+    }
 
-    toggle () {
-      this.$q.dialog({
+    function toggle () {
+      $q.dialog({
         title: 'Options',
-        message: 'Choose your options',
+        message: 'Choose your options:',
         options: {
           type: 'toggle',
           model: [],
@@ -83,6 +87,8 @@ export default {
         // console.log('I am triggered on both OK and Cancel')
       })
     }
+
+    return { radio, checkbox, toggle }
   }
 }
 </script>

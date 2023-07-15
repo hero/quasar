@@ -47,12 +47,14 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
-  data () {
+  setup () {
     return {
-      splitterModel: 50,
-      date: '2019/02/01',
-      events: ['2019/02/01', '2019/02/05', '2019/02/06']
+      splitterModel: ref(50),
+      date: ref('2019/02/01'),
+      events: [ '2019/02/01', '2019/02/05', '2019/02/06' ]
     }
   }
 }

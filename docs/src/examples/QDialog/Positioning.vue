@@ -6,7 +6,7 @@
     <q-btn label="Left" icon="keyboard_arrow_left" color="primary" @click="open('left')" />
 
     <q-dialog v-model="dialog" :position="position">
-      <q-card style="width: 500px">
+      <q-card style="width: 350px">
         <q-linear-progress :value="0.6" color="pink" />
 
         <q-card-section class="row items-center no-wrap">
@@ -27,18 +27,21 @@
 </template>
 
 <script>
-export default {
-  data () {
-    return {
-      dialog: false,
-      position: 'top'
-    }
-  },
+import { ref } from 'vue'
 
-  methods: {
-    open (position) {
-      this.position = position
-      this.dialog = true
+export default {
+  setup () {
+    const dialog = ref(false)
+    const position = ref('top')
+
+    return {
+      dialog,
+      position,
+
+      open (pos) {
+        position.value = pos
+        dialog.value = true
+      }
     }
   }
 }

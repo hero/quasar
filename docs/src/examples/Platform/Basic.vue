@@ -4,7 +4,7 @@
       Browser User Agent: "<strong>{{ $q.platform.userAgent }}</strong>"
     </div>
 
-    <q-markup-table>
+    <q-markup-table flat bordered>
       <thead>
         <tr>
           <th class="text-left">Property</th>
@@ -27,10 +27,15 @@
 </template>
 
 <script>
+import { useQuasar } from 'quasar'
+import { computed } from 'vue'
+
 export default {
-  computed: {
-    touch () {
-      return this.$q.platform.has.touch ? 'has' : 'does not have'
+  setup () {
+    const $q = useQuasar()
+
+    return {
+      touch: computed(() => $q.platform.has.touch ? 'has' : 'does not have')
     }
   }
 }

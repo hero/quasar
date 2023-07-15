@@ -1,6 +1,6 @@
 {
-  "behavior": {
-    "$listeners": true
+  "meta": {
+    "docsUrl": "https://v2.quasar.dev/vue-components/carousel"
   },
 
   "props": {
@@ -13,7 +13,6 @@
         "bottom-right", "bottom-left",
         "top", "right", "bottom", "left"
       ],
-      "examples": [ "top-right" ],
       "category": "position"
     },
 
