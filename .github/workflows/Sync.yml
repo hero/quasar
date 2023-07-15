@@ -24,9 +24,9 @@ jobs:
         id: sync
         uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
         with:
-          upstream_sync_repo: quasarframework/quasar	# Your forked from which repo (需要修改!!!)
-          upstream_sync_branch: dev						# Your forked from which branch (需要修改!!!)
-          target_sync_branch: dev						# Your forked to which branch (需要修改!!!)
+          upstream_sync_repo: quasarframework/quasar
+          upstream_sync_branch: dev
+          target_sync_branch: dev
           target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
 
           # Set test_mode true to run tests instead of the true action!!
