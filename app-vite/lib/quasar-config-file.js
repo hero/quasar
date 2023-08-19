@@ -1,4 +1,5 @@
-import { join, isAbsolute, basename, dirname } from 'node:path'
+import { join, isAbsolute, basename, dirname, relative } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { existsSync, readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import fse from 'fs-extra'
@@ -188,7 +189,7 @@ export class QuasarConfigFile {
       : () => {}
 
     const quasarConfigFileExtension = appPaths.quasarConfigOutputFormat === 'esm' ? 'mjs' : appPaths.quasarConfigOutputFormat
-    this.#tempFile = `${ appPaths.quasarConfigFilename }.temporary.compiled.${ quasarConfigFileExtension }`
+    this.#tempFile = `${ appPaths.quasarConfigFilename }.temporary.compiled.${ Date.now() }.${ quasarConfigFileExtension }`
 
     log(`Using ${ basename(appPaths.quasarConfigFilename) } in "${ appPaths.quasarConfigInputFormat }" format`)
   }
@@ -272,7 +273,10 @@ export class QuasarConfigFile {
 
     let quasarConfigFn
     try {
-      const fnResult = await import(this.#tempFile)
+      const fnResult = await import(
+        pathToFileURL(this.#tempFile)
+      )
+
       quasarConfigFn = fnResult.default || fnResult
     }
     catch (e) {
@@ -280,7 +284,7 @@ export class QuasarConfigFile {
       console.error(e)
       fatal(
         'The quasar.config file has runtime errors. Please check the Node.js stack above against the'
-        + ` temporarily created ${ basename(this.#tempFile) } file and fix the original file.`,
+        + ` temporarily created ${ basename(this.#tempFile) } file, fix the original file then DELETE the temporary one.`,
         'FAIL'
       )
     }
@@ -336,7 +340,7 @@ export class QuasarConfigFile {
 
           try {
             const result = appPaths.quasarConfigOutputFormat === 'esm'
-              ? await import(tempFile + '?t=' + Date.now()) // we also need to cache bust it, hence the ?t= param
+              ? await import(pathToFileURL(tempFile) + '?t=' + Date.now()) // we also need to cache bust it, hence the ?t= param
               : this.#require(tempFile)
 
             quasarConfigFn = result.default || result
@@ -419,7 +423,8 @@ export class QuasarConfigFile {
 
       const msg = 'The quasar.config file has runtime errors.'
         + ' Please check the Node.js stack above against the'
-        + ` temporarily created ${ basename(this.#tempFile) } file.`
+        + ` temporarily created ${ basename(this.#tempFile) } file`
+        + ' then DELETE it.'
 
       if (failOnError === true) {
         fatal(msg, 'FAIL')
@@ -503,7 +508,6 @@ export class QuasarConfigFile {
       needsAppMountHook: false,
       vueDevtools: false,
       versions: { ...this.#versions }, // used by entry templates
-      entryScript: `<script type="module" src="${ appPaths.resolve.entry('client-entry.js').replaceAll('\\', '/') }"></script>`,
       css: { ...this.#cssVariables }
     }
 
@@ -1023,6 +1027,12 @@ export class QuasarConfigFile {
 
       ensureInstall(cfg.electron.bundler)
     }
+
+    const entryScriptWebPath = cfg.build.publicPath + relative(appPaths.appDir, appPaths.resolve.entry('client-entry.js')).replaceAll('\\', '/')
+    Object.assign(cfg.metaConf, {
+      entryScriptWebPath,
+      entryScriptTag: `<script type="module" src="${ entryScriptWebPath }"></script>`
+    })
 
     cfg.htmlVariables = merge({
       ctx: cfg.ctx,
