@@ -25,6 +25,7 @@ const urlRegex = /^http(s)?:\/\//
 
 const tempFile = `${ appPaths.quasarConfigFilename }.temporary.compiled.cjs`
 
+const quasarComponentRE = /^(Q[A-Z]|q-)/
 const quasarConfigBanner = `/* eslint-disable */
 /**
  * THIS FILE IS GENERATED AUTOMATICALLY.
@@ -461,6 +462,7 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
       },
 
       framework: {
+        config: {},
         components: [],
         directives: [],
         plugins: []
@@ -653,11 +655,19 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
     }
 
     // special case where a component can be designated for a framework > config prop
-    if (cfg.framework.config && cfg.framework.config.loading) {
-      const component = cfg.framework.config.loading.spinner
-      // Is a component and is a QComponent
-      if (component !== void 0 && /^(Q[A-Z]|q-)/.test(component) === true) {
-        cfg.framework.components.push(component)
+    const { config } = cfg.framework
+
+    if (config.loading) {
+      const { spinner } = config.loading
+      if (quasarComponentRE.test(spinner)) {
+        cfg.framework.components.push(spinner)
+      }
+    }
+
+    if (config.notify) {
+      const { spinner } = config.notify
+      if (quasarComponentRE.test(spinner)) {
+        cfg.framework.components.push(spinner)
       }
     }
 
