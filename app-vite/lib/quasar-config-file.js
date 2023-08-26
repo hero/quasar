@@ -174,6 +174,7 @@ export class QuasarConfigFile {
   #cssVariables
   #storeProvider
   #vueDevtools
+  #electronInspectPort
 
   constructor ({ ctx, host, port, verifyAddress, watch }) {
     this.#ctx = ctx
@@ -371,7 +372,7 @@ export class QuasarConfigFile {
             delete this.#require.cache[ tempFile ]
           }
 
-          const { quasarConf } = await this.#computeConfig(quasarConfigFn, isFirst)
+          const quasarConf = await this.#computeConfig(quasarConfigFn, isFirst)
 
           if (quasarConf === void 0) {
             return
@@ -379,7 +380,7 @@ export class QuasarConfigFile {
 
           if (isFirst === true) {
             isFirst = false
-            firstBuildIsDone({ quasarConf })
+            firstBuildIsDone(quasarConf)
             return
           }
 
@@ -410,7 +411,7 @@ export class QuasarConfigFile {
       }
 
       warn(msg + ' Please fix it.\n')
-      return {}
+      return
     }
 
     let userCfg
@@ -432,7 +433,7 @@ export class QuasarConfigFile {
       }
 
       warn(msg + ' Please fix the errors in the original file.\n')
-      return {}
+      return
     }
 
     if (Object(userCfg) !== userCfg) {
@@ -445,7 +446,7 @@ export class QuasarConfigFile {
       }
 
       warn(msg + ' Please fix it.\n')
-      return {}
+      return
     }
 
     fse.removeSync(this.#tempFile)
@@ -483,7 +484,8 @@ export class QuasarConfigFile {
         env: {},
         rawDefine: {},
         envFiles: [],
-        resolve: {}
+        resolve: {},
+        htmlMinifyOptions: {}
       },
 
       ssr: {
@@ -531,7 +533,7 @@ export class QuasarConfigFile {
       }
 
       warn('One of your installed App Extensions failed to run.\n')
-      return {}
+      return
     }
 
     const cfg = {
@@ -679,6 +681,16 @@ export class QuasarConfigFile {
       vueOptionsAPI: true,
       polyfillModulePreload: false,
       distDir: join('dist', this.#ctx.modeName),
+
+      htmlMinifyOptions: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: true,
+        collapseBooleanAttributes: true,
+        removeScriptTypeAttributes: true
+        // more options:
+        // https://github.com/kangax/html-minifier#options-quick-reference
+      },
 
       rawDefine: {
         // vue
@@ -952,6 +964,10 @@ export class QuasarConfigFile {
       log(`Using .env files: ${ usedEnvFiles.join(', ') }`)
     }
 
+    if (this.#ctx.mode.electron && this.#electronInspectPort === void 0) {
+      this.#electronInspectPort = await findClosestOpenPort(5858, '0.0.0.0')
+    }
+
     if (this.#ctx.mode.electron && this.#ctx.prod) {
       const { ensureInstall, getDefaultName } = await this.#ctx.cacheProxy.getModule('electron')
 
@@ -962,7 +978,7 @@ export class QuasarConfigFile {
         : appPaths.resolve.electron('icons/icon')
 
       cfg.electron = merge({
-        inspectPort: 5858,
+        inspectPort: this.#electronInspectPort,
         packager: {
           asar: true,
           icon: appPaths.resolve.electron('icons/icon'),
@@ -1052,6 +1068,6 @@ export class QuasarConfigFile {
       cfg.metaConf.needsAppMountHook = true
     }
 
-    return { quasarConf: cfg }
+    return cfg
   }
 }
