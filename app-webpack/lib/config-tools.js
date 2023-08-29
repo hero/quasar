@@ -1,7 +1,7 @@
 const { join } = require('node:path')
 const webpack = require('webpack')
 const { merge } = require('webpack-merge')
-const WebpackChain = require('webpack-chain')
+const WebpackChain = require('webpack-5-chain')
 const { VueLoaderPlugin } = require('vue-loader')
 
 const { cliPkg } = require('./utils/cli-runtime.js')
@@ -210,7 +210,6 @@ module.exports.createWebpackChain = async function createWebpackChain (quasarCon
       ])
   }
 
-  // TODO: change to Asset Management when webpack-chain is webpack5 compatible
   chain.module.rule('images')
     .test(/\.(png|jpe?g|gif|svg|webp|avif|ico)(\?.*)?$/)
     .type('javascript/auto')
@@ -222,7 +221,6 @@ module.exports.createWebpackChain = async function createWebpackChain (quasarCon
       name: `img/[name]${ assetHash }.[ext]`
     })
 
-  // TODO: change to Asset Management when webpack-chain is webpack5 compatible
   chain.module.rule('fonts')
     .test(/\.(woff2?|eot|ttf|otf)(\?.*)?$/)
     .type('javascript/auto')
@@ -234,7 +232,6 @@ module.exports.createWebpackChain = async function createWebpackChain (quasarCon
       name: `fonts/[name]${ assetHash }.[ext]`
     })
 
-  // TODO: change to Asset Management when webpack-chain is webpack5 compatible
   chain.module.rule('media')
     .test(/\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/)
     .type('javascript/auto')
@@ -375,7 +372,14 @@ module.exports.createWebpackChain = async function createWebpackChain (quasarCon
       .use(CopyWebpackPlugin, [ { patterns } ])
   }
 
-  if (ctx.prod) {
+  if (ctx.dev) {
+    chain.optimization
+      .emitOnErrors(false)
+
+    chain.infrastructureLogging({ colors: true, level: 'warn' })
+  }
+  // ctx.prod
+  else {
     chain.optimization
       .concatenateModules(ctx.mode.ssr !== true)
 
@@ -429,8 +433,11 @@ module.exports.createWebpackChain = async function createWebpackChain (quasarCon
   if (hasTypescript === false) {
     const { hasEslint, EslintWebpackPlugin } = cacheProxy.getModule('eslint')
     if (hasEslint === true && EslintWebpackPlugin !== void 0) {
-      const { injectESLintPlugin } = require('./utils/inject-eslint-plugin.js')
-      injectESLintPlugin(chain, quasarConf, compileId)
+      const { warnings, errors } = quasarConf.eslint
+      if (warnings === true || errors === true) {
+        const { injectESLintPlugin } = require('./utils/inject-eslint-plugin.js')
+        injectESLintPlugin(chain, quasarConf, compileId)
+      }
     }
   }
 
@@ -461,16 +468,6 @@ module.exports.extendWebpackChain = async function extendWebpackChain (webpackCh
     log(`Extension(${ hook.api.extId }): Extending Webpack config`)
     await hook.fn(webpackConf, opts, hook.api)
   })
-
-  if (quasarConf.ctx.dev) {
-    webpackConf.optimization = webpackConf.optimization || {}
-    webpackConf.optimization.emitOnErrors = false
-
-    webpackConf.infrastructureLogging = Object.assign(
-      { colors: true, level: 'warn' },
-      webpackConf.infrastructureLogging
-    )
-  }
 
   return promise.then(() => webpackConf)
 }
@@ -512,7 +509,7 @@ module.exports.createNodeEsbuildConfig = async function createNodeEsbuildConfig 
 
   const { hasEslint, ESLint } = cacheProxy.getModule('eslint')
   if (hasEslint === true && ESLint !== void 0) {
-    const { warnings, errors } = quasarConf.build.esbuildEslintOptions
+    const { warnings, errors } = quasarConf.eslint
     if (warnings === true || errors === true) {
       // import only if actually needed (as it imports app's eslint pkg)
       const { quasarEsbuildESLintPlugin } = require('./plugins/esbuild.eslint.js')
@@ -543,7 +540,7 @@ module.exports.createBrowserEsbuildConfig = async function createBrowserEsbuildC
 
   const { hasEslint, ESLint } = await quasarConf.ctx.cacheProxy.getModule('eslint')
   if (hasEslint === true && ESLint !== void 0) {
-    const { warnings, errors } = quasarConf.build.esbuildEslintOptions
+    const { warnings, errors } = quasarConf.eslint
     if (warnings === true || errors === true) {
       // import only if actually needed (as it imports app's eslint pkg)
       const { quasarEsbuildESLintPlugin } = require('./plugins/esbuild.eslint.js')

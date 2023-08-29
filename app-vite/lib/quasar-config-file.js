@@ -467,7 +467,11 @@ export class QuasarConfigFile {
         config: {}
       },
 
-      eslint: {},
+      eslint: {
+        include: [],
+        exclude: [],
+        rawOptions: {}
+      },
 
       sourceFiles: {},
       bin: {},
@@ -668,6 +672,17 @@ export class QuasarConfigFile {
       hasLoadingBarPlugin: cfg.framework.plugins.includes('LoadingBar'),
       hasMetaPlugin: cfg.framework.plugins.includes('Meta')
     })
+
+    cfg.eslint = merge({
+      warnings: false,
+      errors: false,
+      fix: false,
+      formatter: 'stylish',
+      cache: true,
+      include: [],
+      exclude: [],
+      rawOptions: {}
+    }, cfg.eslint)
 
     cfg.build = merge({
       viteVuePluginOptions: {
@@ -951,11 +966,8 @@ export class QuasarConfigFile {
 
     // get the env variables from host project env files
     const { fileEnv, usedEnvFiles, envFromCache } = readFileEnv({
-      appPaths,
-      quasarMode: this.#ctx.modeName,
-      buildType: this.#ctx.dev ? 'dev' : 'prod',
-      envFolder: cfg.build.envFolder,
-      envFiles: cfg.build.envFiles
+      ctx: this.#ctx,
+      quasarConf: cfg
     })
 
     cfg.metaConf.fileEnv = fileEnv

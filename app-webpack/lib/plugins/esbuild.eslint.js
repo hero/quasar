@@ -44,19 +44,17 @@ function parseIssue (path, reportEntry) {
 }
 
 function extractStore ({
-  cache = false, // Note that cache is broken in ESLint
-  // at the time of writing these lines
-  // which is why we disable it by default
+  cache,
   cacheLocation, // injected by us
 
-  formatter = 'stylish',
-  fix = false,
-  warnings = true,
-  errors = true,
-  include = [],
-  exclude = [],
+  formatter,
+  fix,
+  warnings,
+  errors,
+  include,
+  exclude,
 
-  rawOptions = {}
+  rawEsbuildEslintOptions = {}
 }, {
   ESLint,
   resolveToAppDir
@@ -66,7 +64,7 @@ function extractStore ({
     cacheLocation,
     fix,
     errorOnUnmatchedPattern: false,
-    ...rawOptions
+    ...rawEsbuildEslintOptions
   }
 
   if (cache === true) {
@@ -108,13 +106,13 @@ function extractStore ({
 function getLinter (quasarConf, compileId) {
   const {
     ctx: { appPaths, cacheProxy },
-    build: { esbuildEslintOptions }
+    eslint: { rawWebpackEslintPluginOptions, ...eslintOptions }
   } = quasarConf
 
   const cacheId = `eslint-${ compileId }`
 
   const eslintConfig = {
-    ...esbuildEslintOptions,
+    ...eslintOptions,
     cacheLocation: appPaths.resolve.cache(cacheId)
   }
 

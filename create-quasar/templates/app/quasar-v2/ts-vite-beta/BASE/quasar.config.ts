@@ -15,6 +15,7 @@ export default configure((/* ctx */) => {
       // fix: true,
       // include: [],
       // exclude: [],
+      // cache: false,
       // rawOptions: {},
       warnings: true,
       errors: true
@@ -127,11 +128,12 @@ export default configure((/* ctx */) => {
     //   rootComponent: 'src/App.vue',
     //   router: 'src/router/index',
     //   store: 'src/store/index',
-    //   registerServiceWorker: 'src-pwa/register-service-worker',
-    //   serviceWorker: 'src-pwa/custom-service-worker',
+    //   pwaRegisterServiceWorker: 'src-pwa/register-service-worker',
+    //   pwaServiceWorker: 'src-pwa/custom-service-worker',
     //   pwaManifestFile: 'src-pwa/manifest.json',
     //   electronMain: 'src-electron/electron-main',
     //   electronPreload: 'src-electron/electron-preload'
+    //   bexManifestFile: 'src-bex/manifest.json
     // },
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-ssr/configuring-ssr
@@ -157,7 +159,7 @@ export default configure((/* ctx */) => {
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
     pwa: {
-      workboxMode: 'generateSW', // or 'injectManifest'
+      workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       injectPwaMetaTags: true,
       swFilename: 'sw.js',
       manifestFilename: 'manifest.json',
@@ -211,12 +213,12 @@ export default configure((/* ctx */) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
     bex: {
+      // extendBexScriptsConf (esbuildConf) {},
+      // extendBexManifestJson (json) {},
+
       contentScripts: [
         'my-content-script'
-      ],
-
-      // extendBexScriptsConf (esbuildConf) {}
-      // extendBexManifestJson (json) {}
+      ]
     }
   }
 });

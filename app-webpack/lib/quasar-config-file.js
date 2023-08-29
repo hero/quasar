@@ -473,6 +473,13 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
         remove: []
       },
 
+      eslint: {
+        include: [],
+        exclude: [],
+        rawWebpackEslintPluginOptions: {},
+        rawEsbuildEslintOptions: {}
+      },
+
       sourceFiles: {},
       bin: {},
       htmlVariables: {},
@@ -482,11 +489,6 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
       },
 
       build: {
-        esbuildEslintOptions: {
-          include: [],
-          exclude: [],
-          rawOptions: {}
-        },
         esbuildTarget: {},
         vueLoaderOptions: {
           transformAssetUrls: {}
@@ -501,10 +503,6 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
         rawDefine: {},
         envFiles: [],
         webpackTranspileDependencies: [],
-        webpackEslintPluginOptions: {
-          exclude: [],
-          extensions: []
-        },
         uglifyOptions: {
           compress: {},
           mangle: {}
@@ -693,6 +691,18 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
       hasMetaPlugin: cfg.framework.plugins.includes('Meta')
     })
 
+    cfg.eslint = merge({
+      warnings: false,
+      errors: false,
+      fix: false,
+      formatter: 'stylish',
+      cache: true,
+      include: [],
+      exclude: [],
+      rawWebpackEslintPluginOptions: {},
+      rawEsbuildEslintOptions: {}
+    }, cfg.eslint)
+
     cfg.build = merge({
       vueLoaderOptions: {
         transformAssetUrls: clone(this.#transformAssetUrls)
@@ -710,22 +720,6 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
       webpackDevtool: this.#ctx.dev
         ? 'eval-cheap-module-source-map'
         : 'source-map',
-      webpackEslintPluginOptions: {
-        cache: true,
-        fix: false,
-        exclude: [ 'node_modules' ],
-        extensions: ['js', 'vue']
-      },
-      esbuildEslintOptions: {
-        cache: false,
-        formatter: 'stylish',
-        fix: false,
-        warnings: true,
-        errors: true,
-        include: [],
-        exclude: [],
-        rawOptions: {}
-      },
       // env: {}, // leaving here for completeness
       uglifyOptions: {
         compress: {
@@ -919,7 +913,6 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
     // along with deprecation notices; so we transform it automatically
     // for a better experience for our developers
     if (cfg.devServer.https !== void 0) {
-      // TODO: output a notice on terminal
       const { https } = cfg.devServer
 
       delete cfg.devServer.https
@@ -1172,11 +1165,8 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
 
     // get the env variables from host project env files
     const { fileEnv, usedEnvFiles, envFromCache } = readFileEnv({
-      appPaths,
-      quasarMode: this.#ctx.modeName,
-      buildType: this.#ctx.dev ? 'dev' : 'prod',
-      envFolder: cfg.build.envFolder,
-      envFiles: cfg.build.envFiles
+      ctx: this.#ctx,
+      quasarConf: cfg
     })
 
     cfg.metaConf.fileEnv = fileEnv
