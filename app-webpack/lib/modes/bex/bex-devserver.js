@@ -1,7 +1,5 @@
-
 const debounce = require('lodash/debounce.js')
 const chokidar = require('chokidar')
-const fse = require('fs-extra')
 const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
 
@@ -17,17 +15,19 @@ module.exports.QuasarModeDevserver = class QuasarModeDevserver extends AppDevser
   constructor (opts) {
     super(opts)
 
-    this.registerDiff('bexScripts', quasarConf => [
-      quasarConf.eslint,,
-      quasarConf.build.env,
-      quasarConf.build.rawDefine,
+    this.registerDiff('bexScripts', (quasarConf, diffMap) => [
       quasarConf.bex.contentScripts,
-      quasarConf.bex.extendBexScriptsConf
+      quasarConf.bex.extendBexScriptsConf,
+      quasarConf.build.distDir,
+
+      // extends 'esbuild' diff
+      ...diffMap.esbuild(quasarConf)
     ])
 
     this.registerDiff('bexAssets', quasarConf => [
       quasarConf.sourceFiles.bexManifestFile,
-      quasarConf.bex.extendBexManifest
+      quasarConf.bex.extendBexManifestJson,
+      quasarConf.build.distDir
     ])
 
     this.registerDiff('distDir', quasarConf => [
@@ -46,17 +46,6 @@ module.exports.QuasarModeDevserver = class QuasarModeDevserver extends AppDevser
       this.#scriptWatchers = []
 
       this.cleanArtifacts(quasarConf.build.distDir)
-
-      // execute diffs so we don't duplicate compilations
-      diff('bexAssets', quasarConf)
-      diff('bexScripts', quasarConf)
-      diff('webpack', quasarConf)
-
-      return queue(() => {
-        return this.#compileBexAssets(quasarConf)
-          .then(() => this.#compileScripts(quasarConf))
-          .then(() => this.#runWebpack(quasarConf))
-      })
     }
 
     if (diff('bexAssets', quasarConf)) {
@@ -64,7 +53,7 @@ module.exports.QuasarModeDevserver = class QuasarModeDevserver extends AppDevser
     }
 
     if (diff('bexScripts', quasarConf)) {
-      return queue(() => this.#compileScripts(quasarConf))
+      return queue(() => this.#compileBexScripts(quasarConf))
     }
 
     if (diff('webpack', quasarConf)) {
@@ -72,7 +61,7 @@ module.exports.QuasarModeDevserver = class QuasarModeDevserver extends AppDevser
     }
   }
 
-  async #compileScripts (quasarConf) {
+  async #compileBexScripts (quasarConf) {
     this.#scriptWatchers.forEach(watcher => { watcher.close() })
     this.#scriptWatchers = []
 

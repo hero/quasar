@@ -110,6 +110,10 @@ function uniquePathFilter (value, index, self) {
   return self.map(obj => obj.path).indexOf(value.path) === index
 }
 
+function uniqueRegexFilter (value, index, self) {
+  return self.map(regex => regex.toString()).indexOf(value.toString()) === index
+}
+
 let cachedExternalHost, addressRunning = false
 
 async function onAddress ({ host, port }, mode) {
@@ -462,12 +466,14 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
       css: [],
       extras: [],
       animations: [],
+
       framework: {
         components: [],
         directives: [],
         plugins: [],
         config: {}
       },
+
       vendor: {
         add: [],
         remove: []
@@ -707,20 +713,25 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
       vueLoaderOptions: {
         transformAssetUrls: clone(this.#transformAssetUrls)
       },
-
       vueOptionsAPI: true,
+      vueRouterMode: 'hash',
+
+      minify: cfg.metaConf.debugging !== true
+        && (this.#ctx.mode.bex !== true || cfg.bex.minify === true),
+
+      sourcemap: cfg.metaConf.debugging === true,
+
       // need to force extraction for SSR due to
       // missing functionality in vue-loader
       extractCSS: this.#ctx.prod || this.#ctx.mode.ssr,
       distDir: join('dist', this.#ctx.modeName),
       webpackTranspile: true,
       htmlFilename: 'index.html',
-      // webpackTranspileDependencies: [], // leaving here for completeness
       webpackShowProgress: true,
       webpackDevtool: this.#ctx.dev
         ? 'eval-cheap-module-source-map'
         : 'source-map',
-      // env: {}, // leaving here for completeness
+
       uglifyOptions: {
         compress: {
           // turn off flags with small gains to speed up minification
@@ -796,13 +807,7 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
         assets: appPaths.resolve.src('assets'),
         boot: appPaths.resolve.src('boot'),
         stores: appPaths.resolve.src('stores')
-      },
-
-      useFilenameHashes: true,
-      vueRouterMode: 'hash',
-      minify: cfg.metaConf.debugging !== true
-        && (this.#ctx.mode.bex !== true || cfg.bex.minify === true),
-      sourcemap: cfg.metaConf.debugging === true
+      }
     }, cfg.build)
 
     if (cfg.vendor.disable !== true) {
@@ -964,15 +969,15 @@ module.exports.QuasarConfigFile = class QuasarConfigFile {
           // we now check if config is specifying a file path
           // and we actually read the contents so we can later supply correct
           // params to the node HTTPS server
-          ;[ 'ca', 'pfx', 'key', 'cert' ].forEach(prop => {
-            if (typeof https[ prop ] === 'string') {
+          [ 'ca', 'pfx', 'key', 'cert' ].forEach(prop => {
+            if (typeof options[ prop ] === 'string') {
               try {
-                https[ prop ] = readFileSync(https[ prop ])
+                options[ prop ] = readFileSync(options[ prop ])
               }
               catch (e) {
                 console.error(e)
                 console.log()
-                delete https[ prop ]
+                delete options[ prop ]
                 warn(`The devServer.server.options.${ prop } file could not be read. Removed the config.`)
               }
             }

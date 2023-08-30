@@ -1,4 +1,3 @@
-
 const { join } = require('node:path')
 const { readFileSync, writeFileSync } = require('node:fs')
 
@@ -24,7 +23,7 @@ async function createScript (quasarConf, scriptName, entry) {
 
   cfg.outfile = join(quasarConf.build.distDir, `${ scriptName }.js`)
 
-  return extendEsbuildConfig(cfg, quasarConf.bex, quasarConf.ctx, 'BexScripts')
+  return extendEsbuildConfig(cfg, quasarConf.bex, quasarConf.ctx, 'extendBexScriptsConf')
 }
 
 const quasarBexConfig = {

@@ -1,4 +1,3 @@
-
 const {
   createWebpackChain, extendWebpackChain,
   createBrowserEsbuildConfig, extendEsbuildConfig
@@ -30,7 +29,7 @@ function injectWebpackPwa (webpackChain, quasarConf) {
   if (pluginMode === 'GenerateSW') {
     Object.assign(opts, {
       sourcemap: quasarConf.build.sourcemap !== false,
-      mode: ctx.debug === true || quasarConf.build.minify === false ? 'development' : 'production',
+      mode: quasarConf.metaConf.debugging === true || quasarConf.build.minify === false ? 'development' : 'production',
       cacheId: ctx.pkg.appPkg.name || 'quasar-pwa-app',
       cleanupOutdatedCaches: true,
       clientsClaim: true,
@@ -114,7 +113,6 @@ module.exports.injectWebpackPwa = injectWebpackPwa
 
 const quasarPwaConfig = {
   webpack: async quasarConf => {
-
     const webpackChain = await createWebpackChain(quasarConf, { compileId: 'webpack-pwa', threadName: 'PWA UI' })
 
     injectWebpackPwa(webpackChain, quasarConf)
@@ -147,7 +145,7 @@ const quasarPwaConfig = {
       quasarConf.pwa.extendPWACustomSWConf(cfg)
     }
 
-    return extendEsbuildConfig(cfg, quasarConf.pwa, quasarConf.ctx, 'CustomSW')
+    return extendEsbuildConfig(cfg, quasarConf.pwa, quasarConf.ctx, 'extendPWACustomSWConf')
   }
 }
 

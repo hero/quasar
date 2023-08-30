@@ -13,32 +13,38 @@ module.exports.QuasarModeDevserver = class QuasarModeDevserver extends AppDevser
     super(opts)
 
     // also adapt ssr-devserver.js when changing here
-    this.registerDiff('webpackPWA', quasarConf => [
+    this.registerDiff('webpackPWA', (quasarConf, diffMap) => [
       quasarConf.pwa.workboxMode,
       quasarConf.pwa.swFilename,
-      quasarConf.pwa.injectPwaMetaTags,
       quasarConf.pwa.manifestFilename,
       quasarConf.pwa.extendManifestJson,
       quasarConf.pwa.useCredentialsForManifestTag,
+      quasarConf.pwa.injectPwaMetaTags,
       quasarConf.build.htmlFilename, // non-ssr only
       quasarConf.pwa[
         quasarConf.pwa.workboxMode === 'GenerateSW'
           ? 'extendGenerateSWOptions'
           : 'extendInjectManifestOptions'
-      ]
+      ],
+
+      // extends 'webpack' diff
+      ...diffMap.webpack(quasarConf)
     ])
 
     // also update ssr-devserver.js when changing here
-    this.registerDiff('customServiceWorker', quasarConf => [
+    this.registerDiff('customServiceWorker', (quasarConf, diffMap) => [
       quasarConf.pwa.workboxMode,
       quasarConf.pwa.workboxMode === 'InjectManifest'
         ? [
-          quasarConf.build,
-          quasarConf.pwa.extendInjectManifestOptions,
-          quasarConf.pwa.swFilename,
-          quasarConf.pwa.extendPWACustomSWConf,
-          quasarConf.sourceFiles.pwaServiceWorker
-        ]
+            quasarConf.build,
+            quasarConf.pwa.extendInjectManifestOptions,
+            quasarConf.pwa.swFilename,
+            quasarConf.pwa.extendPWACustomSWConf,
+            quasarConf.sourceFiles.pwaServiceWorker,
+
+            // extends 'esbuild' diff
+            ...diffMap.esbuild(quasarConf)
+          ]
         : ''
     ])
   }
@@ -52,7 +58,7 @@ module.exports.QuasarModeDevserver = class QuasarModeDevserver extends AppDevser
     }
 
     // also update ssr-devserver.js when changing here
-    if (diff([ 'webpack', 'webpackPWA' ], quasarConf) === true) {
+    if (diff('webpackPWA', quasarConf) === true) {
       return queue(() => this.#runWebpack(quasarConf, diff('webpackUrl', quasarConf)))
     }
   }

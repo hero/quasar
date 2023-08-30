@@ -46,7 +46,7 @@ const quasarSsrConfig = {
         )
 
       webpackChain.plugin('quasar-ssr-client')
-          .use(QuasarSSRClientPlugin)
+        .use(QuasarSSRClientPlugin)
     }
     else if (quasarConf.devServer.hot) {
       webpackChain.plugin('hot-module-replacement')
@@ -102,7 +102,7 @@ const quasarSsrConfig = {
 
     webpackChain.target('node')
 
-    if (ctx.dev || ctx.debug) {
+    if (quasarConf.metaConf.debugging) {
       webpackChain.devtool('source-map')
     }
 
@@ -189,7 +189,7 @@ const quasarSsrConfig = {
       cfg.outfile = join(quasarConf.build.distDir, 'index.js')
     }
 
-    return extendEsbuildConfig(cfg, quasarConf.ssr, ctx, 'SSRWebserver')
+    return extendEsbuildConfig(cfg, quasarConf.ssr, ctx, 'extendSSRWebserverConf')
   },
 
   customSw: quasarPwaConfig.customSw

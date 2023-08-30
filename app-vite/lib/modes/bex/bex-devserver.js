@@ -14,13 +14,22 @@ export class QuasarModeDevserver extends AppDevserver {
   constructor (opts) {
     super(opts)
 
-    this.registerDiff('bexScripts', quasarConf => [
-      quasarConf.eslint,
-      quasarConf.build.env,
-      quasarConf.build.rawDefine,
+    this.registerDiff('bexScripts', (quasarConf, diffMap) => [
       quasarConf.bex.contentScripts,
       quasarConf.bex.extendBexScriptsConf,
-      quasarConf.bex.extendBexManifest
+      quasarConf.bex.extendBexManifestJson,
+      quasarConf.build.distDir,
+
+      // extends 'esbuild' diff
+      ...diffMap.esbuild(quasarConf)
+    ])
+
+    this.registerDiff('viteBex', (quasarConf, diffMap) => [
+      quasarConf.sourceFiles.bexManifestFile,
+      quasarConf.bex.extendBexManifestJson,
+
+      // extends 'vite' diff
+      ...diffMap.vite(quasarConf)
     ])
 
     this.registerDiff('distDir', quasarConf => [
@@ -39,27 +48,18 @@ export class QuasarModeDevserver extends AppDevserver {
       this.#scriptWatchers = []
 
       this.cleanArtifacts(quasarConf.build.distDir)
-
-      // execute diffs so we don't duplicate compilations
-      diff('bexScripts', quasarConf)
-      diff('vite', quasarConf)
-
-      return queue(() => {
-        return this.#compileScripts(quasarConf)
-          .then(() => this.#compileUI(quasarConf, queue))
-      })
     }
 
     if (diff('bexScripts', quasarConf)) {
-      return queue(() => this.#compileScripts(quasarConf))
+      return queue(() => this.#compileBexScripts(quasarConf))
     }
 
-    if (diff('vite', quasarConf)) {
+    if (diff('viteBex', quasarConf)) {
       return queue(() => this.#compileUI(quasarConf, queue))
     }
   }
 
-  async #compileScripts (quasarConf) {
+  async #compileBexScripts (quasarConf) {
     this.#scriptWatchers.forEach(watcher => { watcher.close() })
     this.#scriptWatchers = []
 
